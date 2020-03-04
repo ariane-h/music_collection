@@ -4,7 +4,8 @@ require_relative('album.rb')
 
 class Artist
 
-attr_reader :name, :id
+attr_reader :id
+attr_accessor :name
 
   def initialize( options )
       @id = options['id'].to_i if options['id']
@@ -23,33 +24,10 @@ attr_reader :name, :id
     @id = result[0]['id'].to_i
   end
 
-  def self.delete_all
-    # db = PG.connect({dbname: 'pizza_shop', host: 'localhost'})
-    sql = "DELETE FROM artists"
-    SqlRunner.run(sql)
-    # db.prepare("delete_all", sql)
-    # db.exec_prepared("delete_all")
-    # db.close
-  end
-
-  def self.all
-    sql = "SELECT * FROM artists"
-    artists = SqlRunner.run(sql)
-    return artists.map {|artist| Artist.new(artist)}
-  end
-
-  def update()
-    sql = "
-    UPDATE artists SET (
-      name,
-      artist_id
-    ) =
-    (
-      $1,$2
-    )
-    WHERE id = $3"
-    values = [@name, @artist_id, @id]
-    SqlRunner.run(sql, values)
+  def update
+    sql = "UPDATE artists SET name = $1"
+    values = [@name]
+    name_update = SqlRunner.run(sql, values)
   end
 
   def album
@@ -57,6 +35,23 @@ attr_reader :name, :id
     values = [@id]
     album = SqlRunner.run(sql, values)
     return album.map {|album| Album.new(album)}
+  end
+
+  def delete
+    sql = "DELETE FROM artists where id = $1"
+    values = [@id]
+    SqlRunner.run(sql, values)
+  end
+
+  def self.delete_all
+    sql = "DELETE FROM artists"
+    SqlRunner.run(sql)
+  end
+
+  def self.all
+    sql = "SELECT * FROM artists"
+    artists = SqlRunner.run(sql)
+    return artists.map {|artist| Artist.new(artist)}
   end
 
 end
