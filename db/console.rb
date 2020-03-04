@@ -30,5 +30,8 @@ album3.save
 album3.title = album2.title
 album3.update
 
+# album3.delete
+# artist3.delete
+
 binding.pry
 nil
